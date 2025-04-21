@@ -95,6 +95,9 @@ dependencies:
   '@radix-ui/react-tooltip':
     specifier: ^1.1.2
     version: 1.2.3(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0)(react@18.2.0)
+  '@tanstack/react-query':
+    specifier: ^5.74.4
+    version: 5.74.4(react@18.2.0)
   '@types/node':
     specifier: 20.6.2
     version: 20.6.2

@@ -8,5 +8,5 @@ export const editorComponents = [Debug, MainNav, HeroSection, Featured];
 export const settings = {
   editorComponents: editorComponents as IBlockswebComponent[],
   scripts: [],
-  styles: [`/_next/static/css/app/layout.css`],
+  styles: [`/_next/static/css/app/[[...slug]]/layout.css`],
 };

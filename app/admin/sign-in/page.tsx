@@ -218,6 +218,11 @@ export default function LoginPage() {
     });
   }
 
+  const onGoogleSignIn = () => {
+    window.location.href = `https://api.blocksweb.nl/google/redirect?redirect_uri=${
+      process.env.NEXT_PUBLIC_APP_URL ?? process.env.BLOCKSWEB_API_URL
+    }/admin/check`;
+  };
   return (
     <HydrationBoundary>
       <div style={styles.container}>
@@ -260,7 +265,7 @@ export default function LoginPage() {
                     ...(isLoading ? styles.buttonDisabled : {}),
                   }}
                   disabled={isLoading}
-                  onClick={() => {}}
+                  onClick={onGoogleSignIn}
                 >
                   <svg
                     style={styles.buttonIcon}

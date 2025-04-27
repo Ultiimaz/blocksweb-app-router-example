@@ -1,189 +1,355 @@
 "use client";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { useAuth } from "@blocksweb/core/editor";
 
-const SignIn = () => {
-  const { authenticate, authState } = useAuth();
+// Define all styles to avoid any globals.css dependency
+const styles = {
+  fontFamily: {
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+  },
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "48px 16px",
+    backgroundColor: "#ffffff",
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+  },
+  card: {
+    width: "100%",
+    maxWidth: "28rem",
+    backgroundColor: "#ffffff",
+    borderRadius: "0.5rem",
+    boxShadow:
+      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    border: "1px solid #e5e7eb",
+  },
+  cardHeader: {
+    padding: "1.5rem 1.5rem 0 1.5rem",
+  },
+  cardTitle: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#111827",
+    margin: "0 0 0.5rem 0",
+    fontFamily: "inherit",
+  },
+  cardDescription: {
+    textAlign: "center",
+    fontSize: "0.875rem",
+    color: "#6B7280",
+    margin: "0.5rem 0 0 0",
+    fontFamily: "inherit",
+  },
+  cardContent: {
+    padding: "1.5rem",
+  },
+  flexColumn: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "1rem",
+  },
+  buttonIcon: {
+    marginRight: "0.5rem",
+    height: "1rem",
+    width: "1rem",
+  },
+  fullWidth: {
+    width: "100%",
+  },
+  buttonOutline: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "0.375rem",
+    fontSize: "0.875rem",
+    fontWeight: "500",
+    padding: "0.5rem 1rem",
+    backgroundColor: "transparent",
+    border: "1px solid #e5e7eb",
+    color: "#374151",
+    cursor: "pointer",
+    width: "100%",
+    fontFamily: "inherit",
+  },
+  button: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "0.375rem",
+    fontSize: "0.875rem",
+    fontWeight: "500",
+    padding: "0.5rem 1rem",
+    backgroundColor: "#2563eb", // blue-600
+    color: "#ffffff",
+    border: "none",
+    cursor: "pointer",
+    width: "100%",
+    height: "2.5rem",
+    fontFamily: "inherit",
+  },
+  buttonDisabled: {
+    opacity: "0.5",
+    cursor: "not-allowed",
+  },
+  dividerContainer: {
+    position: "relative",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  },
+  dividerLine: {
+    position: "absolute",
+    inset: "0",
+    display: "flex",
+    alignItems: "center",
+  },
+  separator: {
+    width: "100%",
+    height: "1px",
+    backgroundColor: "#e5e7eb",
+  },
+  dividerText: {
+    position: "relative",
+    display: "flex",
+    justifyContent: "center",
+    fontSize: "0.75rem",
+    textTransform: "uppercase",
+  },
+  dividerSpan: {
+    backgroundColor: "#ffffff",
+    padding: "0 0.5rem",
+    color: "#6B7280",
+  },
+  formLabel: {
+    display: "block",
+    fontSize: "0.875rem",
+    fontWeight: "500",
+    marginBottom: "0.25rem",
+    color: "#374151",
+    fontFamily: "inherit",
+  },
+  formInput: {
+    display: "block",
+    width: "100%",
+    borderRadius: "0.375rem",
+    border: "1px solid #e5e7eb",
 
+    fontSize: "0.875rem",
+    lineHeight: "1.25rem",
+    color: "#111827",
+    backgroundColor: "#ffffff",
+    fontFamily: "inherit",
+  },
+  formContainer: {
+    padding: "0.5rem 0.75rem",
+  },
+
+  formErrorMessage: {
+    fontSize: "0.75rem",
+    color: "#ef4444",
+    marginTop: "0.25rem",
+    fontFamily: "inherit",
+  },
+  cardFooter: {
+    padding: "0 1.5rem 1.5rem 1.5rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.5rem",
+  },
+  textCenter: {
+    textAlign: "center",
+    fontSize: "0.875rem",
+    color: "#374151",
+    margin: 0,
+    fontFamily: "inherit",
+  },
+  link: {
+    color: "#2563eb", // blue-600
+    textDecoration: "underline",
+    textUnderlineOffset: "4px",
+    fontFamily: "inherit",
+  },
+} as const;
+
+const loginSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
+});
+
+export default function LoginPage() {
   const router = useRouter();
-  return (
-    <div className="flex justify-center items-center bg-gray-300 w-full h-screen">
-      <div className="mt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700 w-1/5">
-        <div className="p-4 sm:p-7">
-          <div className="text-center">
-            <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-              Sign in
-            </h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400">
-              Don &apos; t have an account yet?{" "}
-              <a
-                className="text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500"
-                href="./sign-up"
-              >
-                Sign up here
-              </a>
-            </p>
-          </div>
+  const { authenticate } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-          <div className="mt-5">
-            <a
-              type="button"
-              className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-            >
-              <svg
-                className="w-4 h-auto"
-                width="46"
-                height="47"
-                viewBox="0 0 46 47"
-                fill="none"
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setIsLoading(true);
+
+    // This would normally call your authentication API
+    authenticate(values.email, values.password).then((response) => {
+      if (response) {
+        window.location.href = "/admin/cms/editor";
+      } else {
+        // Handle authentication error
+        setIsLoading(false);
+      }
+    });
+  }
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <div style={styles.cardHeader}>
+          <h2 style={styles.cardTitle}>Sign in to your account</h2>
+          <p style={styles.cardDescription}>
+            Enter your email below to sign in to your account
+          </p>
+        </div>
+        <div style={styles.cardContent}>
+          <div style={styles.flexColumn}>
+            <div style={styles.grid}>
+              <button
+                style={{
+                  ...styles.buttonOutline,
+                  ...(isLoading ? styles.buttonDisabled : {}),
+                }}
+                disabled={isLoading}
+                onClick={() => {}}
               >
-                <path
-                  d="M46 24.0287C46 22.09 45.8533 20.68 45.5013 19.2112H23.4694V27.9356H36.4069C36.1429 30.1094 34.7347 33.37 31.5957 35.5731L31.5663 35.8669L38.5191 41.2719L38.9885 41.3306C43.4477 37.2181 46 31.1669 46 24.0287Z"
-                  fill="#4285F4"
-                />
-                <path
-                  d="M23.4694 47C29.8061 47 35.1161 44.9144 39.0179 41.3012L31.625 35.5437C29.6301 36.9244 26.9898 37.8937 23.4987 37.8937C17.2793 37.8937 12.0281 33.7812 10.1505 28.1412L9.88649 28.1706L2.61097 33.7812L2.52296 34.0456C6.36608 41.7125 14.287 47 23.4694 47Z"
-                  fill="#34A853"
-                />
-                <path
-                  d="M10.1212 28.1413C9.62245 26.6725 9.32908 25.1156 9.32908 23.5C9.32908 21.8844 9.62245 20.3275 10.0918 18.8588V18.5356L2.75765 12.8369L2.52296 12.9544C0.909439 16.1269 0 19.7106 0 23.5C0 27.2894 0.909439 30.8731 2.49362 34.0456L10.1212 28.1413Z"
-                  fill="#FBBC05"
-                />
-                <path
-                  d="M23.4694 9.07688C27.8699 9.07688 30.8622 10.9863 32.5344 12.5725L39.1645 6.11C35.0867 2.32063 29.8061 0 23.4694 0C14.287 0 6.36607 5.2875 2.49362 12.9544L10.0918 18.8588C11.9987 13.1894 17.25 9.07688 23.4694 9.07688Z"
-                  fill="#EB4335"
-                />
-              </svg>
-              Sign in with Google
-            </a>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={styles.buttonIcon}
+                >
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                Github
+              </button>
+              <button
+                style={{
+                  ...styles.buttonOutline,
+                  ...(isLoading ? styles.buttonDisabled : {}),
+                }}
+                disabled={isLoading}
+                onClick={() => {}}
+              >
+                <svg
+                  style={styles.buttonIcon}
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fab"
+                  data-icon="google"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 488 512"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+                  ></path>
+                </svg>
+                Google
+              </button>
+            </div>
+
+            <div style={styles.dividerContainer}>
+              <div style={styles.dividerLine}>
+                <div style={styles.separator}></div>
+              </div>
+              <div style={styles.dividerText}>
+                <span style={styles.dividerSpan}>Or continue with</span>
+              </div>
+            </div>
 
             <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const formElement = e.target as HTMLFormElement;
-                const formData = new FormData(formElement);
-                const email = formData.get("email") as string;
-                const password = formData.get("password") as string;
-                authenticate(email, password).then((authState) => {
-                  if (authState?.response.data) {
-                    router.push("/admin/cms/editor");
-                  }
-                });
-              }}
+              onSubmit={form.handleSubmit(onSubmit)}
+              style={styles.flexColumn}
             >
-              <div className="text-red-600">{authState.message}</div>
-              <div className="grid gap-y-4">
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm mb-2 dark:text-white"
-                  >
-                    Email address
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 ring-2"
-                      required
-                      aria-describedby="email-error"
-                    />
-                    <div className="hidden absolute inset-y-0 end-0 pointer-events-none pe-3">
-                      <svg
-                        className="size-5 text-red-500"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                        aria-hidden="true"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <p
-                    className="hidden text-xs text-red-600 mt-2"
-                    id="email-error"
-                  >
-                    Please include a valid email address so we can get back to
-                    you
+              <div style={styles.formContainer}>
+                <label style={styles.formLabel}>Email</label>
+                <input
+                  style={styles.formInput}
+                  placeholder="name@example.com"
+                  {...form.register("email")}
+                />
+                {form.formState.errors.email && (
+                  <p style={styles.formErrorMessage}>
+                    {form.formState.errors.email.message}
                   </p>
-                </div>
-                <div>
-                  <div className="flex justify-between items-center">
-                    <label
-                      htmlFor="password"
-                      className="block text-sm mb-2 dark:text-white"
-                    >
-                      Password
-                    </label>
-                    <a
-                      className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500"
-                      href="../examples/html/recover-account.html"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 ring-2"
-                      required
-                      aria-describedby="password-error"
-                    />
-                    <div className="hidden absolute inset-y-0 end-0 pointer-events-none pe-3">
-                      <svg
-                        className="size-5 text-red-500"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                        aria-hidden="true"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <p
-                    className="hidden text-xs text-red-600 mt-2"
-                    id="password-error"
-                  >
-                    8+ characters required
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <div className="flex">
-                    <input
-                      id="remember-me"
-                      name="remember-me"
-                      type="checkbox"
-                      className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
-                    />
-                  </div>
-                  <div className="ms-3">
-                    <label
-                      htmlFor="remember-me"
-                      className="text-sm dark:text-white"
-                    >
-                      Remember me
-                    </label>
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                >
-                  Sign in
-                </button>
+                )}
               </div>
+
+              <div style={styles.formContainer}>
+                <label style={styles.formLabel}>Password</label>
+                <input
+                  style={styles.formInput}
+                  type="password"
+                  placeholder="••••••••"
+                  {...form.register("password")}
+                />
+                {form.formState.errors.password && (
+                  <p style={styles.formErrorMessage}>
+                    {form.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                style={{
+                  ...styles.button,
+                  ...(isLoading ? styles.buttonDisabled : {}),
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign in"}
+              </button>
             </form>
+          </div>
+        </div>
+        <div style={styles.cardFooter}>
+          <div style={styles.textCenter}>
+            <a href="/auth/reset-password" style={styles.link}>
+              Forgot your password?
+            </a>
+          </div>
+          <div style={styles.textCenter}>
+            Don&apos;t have an account?{" "}
+            <a href="/auth/register" style={styles.link}>
+              Sign up
+            </a>
           </div>
         </div>
       </div>
     </div>
   );
-};
-export default SignIn;
+}

@@ -6,6 +6,7 @@ import {
   IWorkspace,
 } from "@blocksweb/core/editor";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Suspense } from "react";
 
 type PageClientProps = {
   workspace: IWorkspace;
@@ -21,15 +22,17 @@ const queryClient = new QueryClient({
 
 const PageClient = (props: PageClientProps) => {
   return (
-    <BlockswebProvider settings={settings}>
-      <QueryClientProvider client={queryClient}>
-        <ContentPanel
-          type={"editor"}
-          workspace={props.workspace}
-          session={props.session}
-        />
-      </QueryClientProvider>
-    </BlockswebProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlockswebProvider settings={settings}>
+        <QueryClientProvider client={queryClient}>
+          <ContentPanel
+            type={"editor"}
+            workspace={props.workspace}
+            session={props.session}
+          />
+        </QueryClientProvider>
+      </BlockswebProvider>
+    </Suspense>
   );
 };
 

@@ -8,6 +8,12 @@ export default async function Cms() {
   const cookieStore = await cookies();
   const session = cookieStore.get("session");
 
+  console.log({
+    session: session?.value,
+    workspace,
+    workspaceId: workspace?.id,
+  });
+
   if (!workspace) {
     return <div>Oh no! this is not your ws</div>;
   }

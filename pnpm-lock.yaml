@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@blocksweb/core':
-    specifier: 1.0.13
-    version: 1.0.13(@babel/core@7.26.10)(@tiptap/core@2.11.7)(@tiptap/extension-code-block@2.11.7)(@tiptap/pm@2.11.7)(@types/react-dom@18.2.7)(@types/react@18.2.22)(highlight.js@11.11.1)(next@13.5.1)(react-dom@18.2.0)(react@18.2.0)(redux@5.0.1)(tailwindcss@3.3.3)(webpack@5.99.6)
+    specifier: 1.0.14
+    version: 1.0.14(@babel/core@7.26.10)(@tiptap/core@2.11.7)(@tiptap/extension-code-block@2.11.7)(@tiptap/pm@2.11.7)(@types/react-dom@18.2.7)(@types/react@18.2.22)(highlight.js@11.11.1)(next@13.5.1)(react-dom@18.2.0)(react@18.2.0)(redux@5.0.1)(tailwindcss@3.3.3)(webpack@5.99.6)
   '@hookform/resolvers':
     specifier: ^3.9.0
     version: 3.10.0(react-hook-form@7.56.0)
@@ -495,8 +495,8 @@ packages:
       '@babel/helper-validator-identifier': 7.25.9
     dev: false
 
-  /@blocksweb/core@1.0.13(@babel/core@7.26.10)(@tiptap/core@2.11.7)(@tiptap/extension-code-block@2.11.7)(@tiptap/pm@2.11.7)(@types/react-dom@18.2.7)(@types/react@18.2.22)(highlight.js@11.11.1)(next@13.5.1)(react-dom@18.2.0)(react@18.2.0)(redux@5.0.1)(tailwindcss@3.3.3)(webpack@5.99.6):
-    resolution: {integrity: sha512-uKanMWMnPmlgYrW9scdBEhY5vX8khjyVqMxjfk3Lvyuipl6Bphk4vp2fj8w1MD/x7ULyOsuMlD+6RvyGgalx5A==}
+  /@blocksweb/core@1.0.14(@babel/core@7.26.10)(@tiptap/core@2.11.7)(@tiptap/extension-code-block@2.11.7)(@tiptap/pm@2.11.7)(@types/react-dom@18.2.7)(@types/react@18.2.22)(highlight.js@11.11.1)(next@13.5.1)(react-dom@18.2.0)(react@18.2.0)(redux@5.0.1)(tailwindcss@3.3.3)(webpack@5.99.6):
+    resolution: {integrity: sha512-d5FEqPzGVsxkv9VR9oj8GgUMyup0GYoEhp8nMrcI1V+Vry02TwVF/1oaGJ7c9xpFbA7kxy9xK6o9BjJkgF79YA==}
     peerDependencies:
       next: ^11 || ^12 || ^13 || ^14 || ^15
       react: 18 || 19

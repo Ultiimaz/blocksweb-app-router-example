@@ -1,41 +1,38 @@
-"use client";
-import ClientComponent from "@/settings/components/client-component";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { BlockOutlet, IBlockswebComponent } from "@blocksweb/core/editor";
+import React from "react";
 
-type Todo = {
-  userId: number;
-  id: number;
-  title: string;
-  completed: boolean;
-};
+const Debug: IBlockswebComponent = (props) => {
 
-const Debug = () => {
-  const { data: todos } = useSuspenseQuery({
-    queryKey: ["todos"],
-    queryFn: async () => {
-      const res = await fetch("https://jsonplaceholder.typicode.com/todos");
-      if (!res.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return res.json() as Promise<Todo[]>;
-    },
-  });
   return (
-    <div>
-      <ClientComponent todos={todos} />
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        minWidth: "100px",
+        minHeight: "100px",
+      }}
+    >
+      <BlockOutlet component={props.leftComponent} propName="leftComponent" />
+      <BlockOutlet component={props.rightComponent} propName="rightComponent" />
     </div>
   );
 };
 
 Debug.schema = {
-  displayName: "Feature Section",
+  displayName: "Debug",
   options: [
     {
-      name: "feature1",
+      name: "leftComponent",
       type: "component",
-      label: "Feature 1",
+      label: "Component",
     },
-  ],
+    {
+      name: "rightComponent",
+      type: "component",
+      label: "Component",
+    },
+  ]
 };
 
 export default Debug;

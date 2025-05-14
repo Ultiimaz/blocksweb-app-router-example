@@ -28,8 +28,7 @@ const PageClient = (props: PageClientProps) => {
           <ContentPanel
             type={"editor"}
             workspace={props.workspace}
-            session={props.session}
-          />
+            session={props.session} settings={settings} />
         </QueryClientProvider>
       </BlockswebProvider>
     </Suspense>

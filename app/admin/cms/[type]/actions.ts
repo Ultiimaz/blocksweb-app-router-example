@@ -1,6 +1,7 @@
 import { IWorkspace } from "@blocksweb/core/editor";
 import assert from "assert";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const getWorkspace = async (): Promise<IWorkspace | undefined> => {
   assert(process.env.BLOCKSWEB_API_KEY, "BLOCKSWEB_API_KEY not set.");
@@ -8,7 +9,11 @@ export const getWorkspace = async (): Promise<IWorkspace | undefined> => {
   const cookieStore = await cookies();
   const session = cookieStore.get("session");
   console.log(session?.value, token);
-  assert(session, "You are not logged in");
+
+  if (!session || !session.value) {
+    redirect("/admin/sign-in");
+  }
+
   try {
     const workspaces: IWorkspace[] = await fetch(
       "https://api.blocksweb.nl/workspaces",
